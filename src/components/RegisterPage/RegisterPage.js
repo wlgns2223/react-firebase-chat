@@ -29,10 +29,15 @@ function RegisterPage() {
           createdUser.user.email
         )}?d=identicon`,
       });
+
+      // firebase 데이터베이스 저장
+      await firebase.database().ref("users").child(createdUser.user.uid).set({
+        displayName: createdUser.user.displayName,
+        image: createdUser.user.photoURL,
+      });
+
       setLoading(false);
-      console.log(createdUser);
     } catch (e) {
-      console.log(e);
       setErrorFromSubmit(e.message);
       setLoading(false);
       setTimeout(() => {
