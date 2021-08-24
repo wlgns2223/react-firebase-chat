@@ -10,7 +10,7 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import RegisterPage from "./components/RegisterPage/RegisterPage";
 import firebase from "./firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "./redux/actions/userAction";
+import { setUser, clearUser } from "./redux/actions/userAction";
 
 function App(props) {
   const history = useHistory();
@@ -22,13 +22,13 @@ function App(props) {
         history.push("/");
         dispatch(setUser(user));
       } else {
-        history.push("/register");
+        history.push("/login");
+        dispatch(clearUser());
       }
     });
   }, []);
 
   if (isLoading) {
-    console.log("asdfasdf");
     return <div>Loading...</div>;
   } else {
     return (
