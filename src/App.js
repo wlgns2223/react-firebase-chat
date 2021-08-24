@@ -19,7 +19,6 @@ function App(props) {
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log(user);
         history.push("/");
         dispatch(setUser(user));
       } else {
@@ -28,7 +27,6 @@ function App(props) {
     });
   }, []);
 
-  console.log(isLoading);
   if (isLoading) {
     console.log("asdfasdf");
     return <div>Loading...</div>;
