@@ -37,7 +37,7 @@ export class Chatrooms extends Component {
     this.setState({ firstLoad: false });
   };
 
-  // 파이어 베이스 데이터베이스 리스터 연결
+  // 파이어 베이스 데이터베이스 리스너 연결
   addChatRoomsListener = () => {
     let chatRoomsArr = [];
     this.state.chatRoomsRef.on("child_added", (DataSnapshot) => {
