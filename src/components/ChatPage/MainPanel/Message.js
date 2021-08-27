@@ -16,26 +16,26 @@ function Message({ message, user }) {
 
   return (
     <Media style={{ marginBottom: "3px" }}>
-      <img
+      {/* <img
         style={{ borderRadius: "10px" }}
         width={48}
         height={48}
         className="mr-3"
         src={message.user.image}
         alt="user photo"
-      />
+      /> */}
 
       <Media.Body
         style={{ backgroundColor: isMessageMine(message, user) && "#ececec" }}
       >
         <h6>
           {message.user.name}
-          <span style={{ fontSize: "10px", color: "grey" }}>
+          <span style={{ marginLeft: "10px", fontSize: "10px", color: "grey" }}>
             {timeFromNow(message.timestamp)}
           </span>
         </h6>
         {isImage(message) ? (
-          <img style={{ maxWidth: "300px" }} alt="image" />
+          <img style={{ maxWidth: "300px" }} src={message.image} alt="image" />
         ) : (
           <p>{message.content}</p>
         )}
