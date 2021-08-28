@@ -3,9 +3,13 @@ import { FaRegSmileWink, FaPlus } from "react-icons/fa";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Badge from "react-bootstrap/Badge";
 import { connect } from "react-redux";
 import firebase from "../../../firebase";
-import { setCurrentChatRoom } from "../../../redux/actions/chatRoomAction";
+import {
+  setCurrentChatRoom,
+  setPrivateChatRoom,
+} from "../../../redux/actions/chatRoomAction";
 
 export class Chatrooms extends Component {
   state = {
@@ -13,9 +17,11 @@ export class Chatrooms extends Component {
     name: "",
     description: "",
     chatRoomsRef: firebase.database().ref("chatRooms"),
+    messageRef: firebase.database().ref("message"),
     chatRooms: [],
     firstLoad: true,
     activeChatRoomId: "",
+    notifications: [],
   };
 
   componentDidMount() {
@@ -43,7 +49,30 @@ export class Chatrooms extends Component {
     this.state.chatRoomsRef.on("child_added", (DataSnapshot) => {
       chatRoomsArr.push(DataSnapshot.val());
       this.setState({ chatRooms: chatRoomsArr }, () => this.setFirstChatRoom());
+      this.addNotificationListener(DataSnapshot.key);
     });
+  };
+
+  addNotificationListener = (chatRoomId) => {
+    this.state.messageRef.child(chatRoomId).on("value", (DataSnapshot) => {
+      if (this.props.chatRoom) {
+        this.handleNotification(
+          chatRoomId,
+          this.props.chatRoom.id,
+          this.state.notifications,
+          DataSnapshot
+        );
+      }
+    });
+  };
+
+  handleNotification = (
+    chatRoomId,
+    currentChatRoomId,
+    notifications,
+    DataSnapshot
+  ) => {
+    // 방에 맞는 알림 넣어주기
   };
 
   handleClose = () => this.setState({ show: false });
@@ -83,6 +112,7 @@ export class Chatrooms extends Component {
   isFormValid = (name, description) => name && description;
   changeChatRoom = (room) => {
     this.props.dispatch(setCurrentChatRoom(room));
+    this.props.dispatch(setPrivateChatRoom(false));
     this.setState({ activeChatRoomId: room.id });
   };
   renderChatRooms = (chatRooms) =>
@@ -98,7 +128,15 @@ export class Chatrooms extends Component {
           this.changeChatRoom(room);
         }}
         key={room.id}
-      >{`# ${room.name}`}</li>
+      >
+        {`# ${room.name}`}
+        <Badge
+          style={{ backgroundColor: "red", float: "right", marginTop: "2px" }}
+          bg="danger"
+        >
+          1
+        </Badge>
+      </li>
     ));
 
   render() {
@@ -171,6 +209,7 @@ export class Chatrooms extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user.currentUser,
+    chatRoom: state.chatRoom.currentChatRoom,
   };
 };
 export default connect(mapStateToProps)(Chatrooms);
