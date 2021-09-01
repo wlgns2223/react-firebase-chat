@@ -73,6 +73,31 @@ export class Chatrooms extends Component {
     DataSnapshot
   ) => {
     // 방에 맞는 알림 넣어주기
+
+    let index = notifications.findIndex(
+      (notification) => notification.id === chatRoomId
+    );
+
+    if (index === -1) {
+      notifications.push({
+        id: chatRoomId,
+        total: DataSnapshot.numChildren(),
+        lastKnownTotal: DataSnapshot.numChildren(),
+        count: 0,
+      });
+    } else {
+      if (chatRoomId !== currentChatRoomId) {
+        const lastTotal = notifications[index].lastKnownTotal;
+
+        if (DataSnapshot.numChildren() - lastTotal > 0) {
+          notifications[index].count = DataSnapshot.numChildren() - lastTotal;
+        }
+      }
+
+      notifications[index].total = DataSnapshot.numChildren();
+    }
+
+    this.setState({ notifications });
   };
 
   handleClose = () => this.setState({ show: false });
@@ -84,6 +109,7 @@ export class Chatrooms extends Component {
       this.addChatRoom();
     }
   };
+
   addChatRoom = async () => {
     const { name, description } = this.state;
     const user = this.props.user;
@@ -134,10 +160,20 @@ export class Chatrooms extends Component {
           style={{ backgroundColor: "red", float: "right", marginTop: "2px" }}
           bg="danger"
         >
-          1
+          {this.getNumberOfUnreadMessagesFrom(room)}
         </Badge>
       </li>
     ));
+
+  getNumberOfUnreadMessagesFrom = (room) => {
+    let count = 0;
+    this.state.notifications.forEach((notification) => {
+      if (notification.id === room.id) {
+        count = notification.count;
+      }
+    });
+    if (count > 0) return count;
+  };
 
   render() {
     return (
